@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>每日工作重点提醒</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --panel-2: #eef3ff;
+      --primary: #4f7cff;
+      --primary-2: #8ea8ff;
+      --accent: #ffb84d;
+      --success: #22b573;
+      --text: #1f2a37;
+      --muted: #667085;
+      --danger: #f15b5b;
+      --border: rgba(28, 39, 57, 0.08);
+      --shadow: 0 14px 34px rgba(58, 88, 140, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100vh;
+      padding: 32px 18px;
+    }
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 24px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar {
+      padding: 22px 20px;
+      height: fit-content;
+      position: sticky;
+      top: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .brand h1 {
+      font-size: 1.15rem;
+      margin: 0;
+    }
+
+    .mini-tag {
+      background: #ecf2ff;
+      color: var(--primary);
+      border-radius: 999px;
+      font-size: 12px;
+      padding: 6px 10px;
+      font-weight: 700;
+    }
+
+    .date-card {
+      background: linear-gradient(135deg, #eff5ff 0%, #f5f1ff 100%);
+      border-radius: 18px;
+      padding: 18px 18px 12px;
+      border: 1px solid rgba(79, 124, 255, 0.08);
+      margin-bottom: 16px;
+    }
+
+    .date-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .date-main {
+      font-weight: 800;
+      font-size: 1.6rem;
+      margin: 0;
+    }
+
+    .date-sub {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      border: 1px solid rgba(31, 42, 55, 0.08);
+      background: #f9fafc;
+      border-radius: 12px;
+      padding: 12px 14px;
+      outline: none;
+      font-size: 14px;
+      color: var(--text);
+      transition: 0.2s ease;
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: rgba(79, 124, 255, 0.4);
+      box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.12);
+      background: #fff;
+    }
+
+    .field textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .primary-btn {
+      border: 0;
+      background: linear-gradient(135deg, var(--primary) 0%, #6a8dff 100%);
+      color: white;
+      border-radius: 12px;
+      padding: 13px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 12px 20px rgba(79, 124, 255, 0.24);
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .secondary-btn {
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 12px;
+      padding: 11px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .main {
+      padding: 22px 20px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      border: 1px solid rgba(79, 124, 255, 0.1);
+      background: #f4f7ff;
+      color: var(--primary);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(140px, 1fr));
+      gap: 16px;
+      margin: 22px 0;
+    }
+
+    .stat-card {
+      background: linear-gradient(180deg, #fff 0%, #f7f9ff 100%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px 18px;
+    }
+
+    .stat-card .label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .stat-card .value small {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-left: 4px;
+    }
+
+    .summary-box {
+      background: linear-gradient(135deg, #fffaf1 0%, #fff4df 100%);
+      border: 1px solid rgba(255, 184, 77, 0.18);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+
+    .summary-box h3 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+    }
+
+    .summary-box textarea {
+      width: 100%;
+      min-height: 80px;
+      resize: vertical;
+      border: 1px solid rgba(31, 42, 55, 0.08);
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .list-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #f4f6fb;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .filter-btn.active {
+      background: #edf3ff;
+      color: var(--primary);
+      border-color: rgba(79, 124, 255, 0.12);
+    }
+
+    .task-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .task-item {
+      display: grid;
+      grid-template-columns: 24px 1fr auto;
+      gap: 14px;
+      align-items: start;
+      background: linear-gradient(180deg, #fff 0%, #f9fbff 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 14px;
+      transition: all 0.2s ease;
+    }
+
+    .task-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(62, 82, 128, 0.08);
+    }
+
+    .task-item.done {
+      opacity: 0.72;
+    }
+
+    .task-item.done .task-title {
+      text-decoration: line-through;
+    }
+
+    .check {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(79, 124, 255, 0.6);
+      border-radius: 50%;
+      margin-top: 2px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      background: white;
+    }
+
+    .task-item.done .check {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    .task-item.done .check::before {
+      content: "✓";
+      font-weight: 800;
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .task-main {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .task-topline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .task-title {
+      font-size: 1.04rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .task-tag {
+      display: inline-flex;
+      align-items: center;
+      background: #edf2ff;
+      color: var(--primary);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 8px;
+    }
+
+    .task-tag.warning {
+      background: #fff1d9;
+      color: #c97a00;
+    }
+
+    .task-tag.success {
+      background: #eafaf3;
+      color: var(--success);
+    }
+
+    .task-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .task-note {
+      margin: 0;
+      color: #465163;
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
+    .task-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .mini-action {
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .mini-action.delete {
+      color: var(--danger);
+      border-color: rgba(241, 91, 91, 0.15);
+    }
+
+    .empty-state {
+      padding: 34px 18px;
+      text-align: center;
+      background: #f9fbff;
+      border: 1px dashed rgba(79, 124, 255, 0.2);
+      border-radius: 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="panel sidebar">
+      <div class="brand">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="brand-mark">✓</div>
+          <h1>工作重点</h1>
+        </div>
+        <span class="mini-tag">Daily</span>
+      </div>
+
+      <div class="date-card">
+        <div class="date-label">今天</div>
+        <div id="currentDate" class="date-main">2026-10-10</div>
+        <div id="dayLabel" class="date-sub">星期六</div>
+      </div>
+
+      <form id="taskForm">
+        <div class="field">
+          <label for="title">工作重点</label>
+          <input id="title" type="text" placeholder="例如：完成周报汇总" required />
+        </div>
+
+        <div class="field">
+          <label for="category">类型</label>
+          <select id="category">
+            <option value="重要">重要</option>
+            <option value="紧急">紧急</option>
+            <option value="日常">日常</option>
+            <option value="支持">支持</option>
+            <option value="复盘">复盘</option>
+          </select>
+        </div>
+
+        <div class="two-col">
+          <div class="field">
+            <label for="reminderTime">提醒时间</label>
+            <input id="reminderTime" type="time" />
+          </div>
+
+          <div class="field">
+            <label for="priority">优先级</label>
+            <select id="priority">
+              <option value="P1">P1</option>
+              <option value="P2">P2</option>
+              <option value="P3">P3</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="note">备注</label>
+          <textarea id="note" placeholder="例如：需要和老板确认结果，提前准备文档。"></textarea>
+        </div>
+
+        <button class="primary-btn" type="submit">新增今日重点</button>
+        <button class="secondary-btn" type="button" id="notifyBtn">启用提醒通知</button>
+      </form>
+    </aside>
+
+    <main class="panel main">
+      <div class="topbar">
+        <h2>今日工作安排</h2>
+        <div class="topbar-actions">
+          <span class="chip" id="focusCount">0 项重点</span>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card">
+          <div class="label">总任务</div>
+          <p class="value" id="totalTask">0</p>
+        </div>
+
+        <div class="stat-card">
+          <div class="label">已完成</div>
+          <p class="value" id="doneTask">0</p>
+        </div>
+
+        <div class="stat-card">
+          <div class="label">进度</div>
+          <p class="value" id="progressValue">0<small>%</small></p>
+        </div>
+      </div>
+
+      <div class="summary-box">
+        <h3>今日一句话总结</h3>
+        <textarea id="summaryInput" placeholder="例如：今天重点是推动项目上线前的最后一轮确认，并确保沟通信息同步。"></textarea>
+      </div>
+
+      <div class="list-header">
+        <h3>任务列表</h3>
+        <div class="filters">
+          <button class="filter-btn active" data-filter="all">全部</button>
+          <button class="filter-btn" data-filter="todo">待办</button>
+          <button class="filter-btn" data-filter="done">已完成</button>
+        </div>
+      </div>
+
+      <div id="taskList" class="task-list"></div>
+    </main>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'daily_focus_tasks_v1';
+    const SUMMARY_KEY = 'daily_focus_summary_v1';
+    const DEFAULT_TASKS = [
+      {
+        id: crypto.randomUUID ? crypto.randomUUID() : Date.now() + Math.random(),
+        title: '整理今日会议纪要',
+        category: '重要',
+        priority: 'P1',
+        note: '确认结论和下一步事项，发送给所有相关人。',
+        reminderTime: '09:30',
+        completed: false,
+        createdAt: Date.now()
+      },
+      {
+        id: crypto.randomUUID ? crypto.randomUUID() : Date.now() + Math.random(),
+        title: '同步项目进度',
+        category: '日常',
+        priority: 'P2',
+        note: '更新进度和风险点，准备给领导汇报。',
+        reminderTime: '15:00',
+        completed: true,
+        createdAt: Date.now() + 1000
+      }
+    ];
+
+    let tasks = loadTasks();
+    let currentFilter = 'all';
+    let notificationsEnabled = false;
+
+    const taskForm = document.getElementById('taskForm');
+    const taskList = document.getElementById('taskList');
+    const titleInput = document.getElementById('title');
+    const categoryInput = document.getElementById('category');
+    const priorityInput = document.getElementById('priority');
+    const noteInput = document.getElementById('note');
+    const reminderTimeInput = document.getElementById('reminderTime');
+    const summaryInput = document.getElementById('summaryInput');
+    const currentDateEl = document.getElementById('currentDate');
+    const dayLabelEl = document.getElementById('dayLabel');
+    const totalTaskEl = document.getElementById('totalTask');
+    const doneTaskEl = document.getElementById('doneTask');
+    const progressValueEl = document.getElementById('progressValue');
+    const focusCountEl = document.getElementById('focusCount');
+    const notifyBtn = document.getElementById('notifyBtn');
+
+    function loadTasks() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+        if (Array.isArray(saved) && saved.length) return saved;
+      } catch (e) {}
+      return DEFAULT_TASKS;
+    }
+
+    function saveTasks() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    }
+
+    function loadSummary() {
+      return localStorage.getItem(SUMMARY_KEY) || '';
+    }
+
+    function saveSummary() {
+      localStorage.setItem(SUMMARY_KEY, summaryInput.value.trim());
+    }
+
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function getDayLabel(date) {
+      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+      return weekdays[date.getDay()];
+    }
+
+    function renderDate() {
+      const now = new Date();
+      currentDateEl.textContent = formatDate(now);
+      dayLabelEl.textContent = getDayLabel(now);
+    }
+
+    function getVisibleTasks() {
+      if (currentFilter === 'todo') return tasks.filter(task => !task.completed);
+      if (currentFilter === 'done') return tasks.filter(task => task.completed);
+      return tasks;
+    }
+
+    function renderTaskList() {
+      const visibleTasks = getVisibleTasks();
+      taskList.innerHTML = '';
+
+      if (!visibleTasks.length) {
+        taskList.innerHTML = `
+          <div class="empty-state">
+            暂无任务，开始记录今天的重点内容吧！
+          </div>
+        `;
+        return;
+      }
+
+      const sorted = [...visibleTasks].sort((a, b) => {
+        const weight = { P1: 0, P2: 1, P3: 2 };
+        const aWeight = weight[a.priority] ?? 99;
+        const bWeight = weight[b.priority] ?? 99;
+        return aWeight - bWeight;
+      });
+
+      sorted.forEach(task => {
+        const item = document.createElement('div');
+        item.className = `task-item ${task.completed ? 'done' : ''}`;
+
+        const categoryClass = task.category === '紧急' ? 'warning' :
+          task.category === '重要' ? '' : task.category === '日常' ? 'success' : '';
+
+        item.innerHTML = `
+          <div class="check" data-action="toggle" data-id="${task.id}" aria-label="切换状态"></div>
+          <div class="task-main">
+            <div class="task-topline">
+              <h4 class="task-title">${escapeHtml(task.title)}</h4>
+              <span class="task-tag ${categoryClass}">${escapeHtml(task.category)}</span>
+              <span class="task-tag">${escapeHtml(task.priority)}</span>
+            </div>
+            <div class="task-meta">
+              ${task.reminderTime ? `<span>提醒：${task.reminderTime}</span>` : '<span>无提醒</span>'}
+              <span>${new Date(task.createdAt).toLocaleDateString()}</span>
+            </div>
+            ${task.note ? `<p class="task-note">${escapeHtml(task.note)}</p>` : ''}
+          </div>
+          <div class="task-actions">
+            <button class="mini-action delete" data-action="delete" data-id="${task.id}">删除</button>
+          </div>
+        `;
+
+        taskList.appendChild(item);
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function updateStats() {
+      const total = tasks.length;
+      const done = tasks.filter(task => task.completed).length;
+      const progress = total ? Math.round((done / total) * 100) : 0;
+
+      totalTaskEl.textContent = total;
+      doneTaskEl.textContent = done;
+      progressValueEl.innerHTML = `${progress}<small>%</small>`;
+      focusCountEl.textContent = `${total} 项重点`;
+    }
+
+    function render() {
+      renderTaskList();
+      updateStats();
+      summaryInput.value = loadSummary();
+      renderDate();
+    }
+
+    taskForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const title = titleInput.value.trim();
+      if (!title) return;
+
+      const task = {
+        id: crypto.randomUUID ? crypto.randomUUID() : Date.now() + Math.random(),
+        title,
+        category: categoryInput.value,
+        priority: priorityInput.value,
+        note: noteInput.value.trim(),
+        reminderTime: reminderTimeInput.value,
+        completed: false,
+        createdAt: Date.now()
+      };
+
+      tasks.unshift(task);
+      saveTasks();
+      taskForm.reset();
+      render();
+    });
+
+    taskList.addEventListener('click', (event) => {
+      const target = event.target;
+      const action = target.dataset.action;
+      const id = target.dataset.id;
+
+      if (!id) return;
+
+      if (action === 'toggle') {
+        tasks = tasks.map(task => {
+          if (task.id === id) {
+            return { ...task, completed: !task.completed };
+          }
+          return task;
+        });
+      }
+
+      if (action === 'delete') {
+        tasks = tasks.filter(task => task.id !== id);
+      }
+
+      saveTasks();
+      render();
+    });
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(item => item.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderTaskList();
+      });
+    });
+
+    summaryInput.addEventListener('input', saveSummary);
+
+    notifyBtn.addEventListener('click', async () => {
+      if (!('Notification' in window)) {
+        alert('当前浏览器不支持通知功能');
+        return;
+      }
+
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        notificationsEnabled = true;
+        notifyBtn.textContent = '提醒已启用';
+        notifyBtn.style.background = '#ecf9f2';
+        notifyBtn.style.color = '#15955b';
+        notifyBtn.style.borderColor = '#cbead8';
+        alert('提醒通知已启用，到了提醒时间会自动弹出通知。');
+      } else {
+        alert('通知权限未开启，提醒功能将无法弹出桌面通知。');
+      }
+    });
+
+    function checkReminder() {
+      if (!tasks.length) return;
+      if (!('Notification' in window)) return;
+
+      const now = new Date();
+      const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      tasks.forEach(task => {
+        if (!task.reminderTime || task.completed) return;
+
+        if (currentTime === task.reminderTime) {
+          const message = `${task.title} — ${task.category}`;
+          if (notificationsEnabled && Notification.permission === 'granted') {
+            new Notification('工作提醒', {
+              body: message,
+              tag: task.id
+            });
+          } else {
+            console.log('提醒触发：', task.title);
+          }
+        }
+      });
+    }
+
+    setInterval(() => {
+      checkReminder();
+    }, 30000);
+
+    render();
+  </script>
+</body>
+</html>
